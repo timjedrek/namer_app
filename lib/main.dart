@@ -56,56 +56,127 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
     return Scaffold(
-      body: Center(
-        // Center the column within the screen
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center, // Center items vertically
-          children: [
-            Text('Hello World'),
-            Text(
-              'Here\'s a random idea:',
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center, // Center-align text horizontally
-            ),
-            SizedBox(height: 10), // Space between text widgets
-            Text(
-              appState.current,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-              textAlign: TextAlign.center, // Center-align text horizontally
-            ),
-            SizedBox(height: 20), // Space between text and button
-            Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // Center buttons horizontally
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    appState.toggleFavorite();
-                  },
-                  child: Text('❤️ Like'),
+      body: Row(
+        children: [
+          SafeArea(
+            child: NavigationRail(
+              extended: false,
+              destinations: [
+                NavigationRailDestination(
+                  icon: Icon(Icons.home),
+                  label: Text('Home'),
                 ),
-                SizedBox(width: 10), // Space between the buttons
-                ElevatedButton(
-                  onPressed: () {
-                    appState.getNext();
-                  },
-                  child: Text('Next'),
+                NavigationRailDestination(
+                  icon: Icon(Icons.favorite),
+                  label: Text('Favorites'),
                 ),
               ],
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: Container(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: _selectedIndex == 0 ? GeneratorPage() : FavoritesPage(),
+            ),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class GeneratorPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Hello World'),
+          Text(
+            'Here\'s a random idea:',
+            style: Theme.of(context).textTheme.headlineSmall,
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 10),
+          Text(
+            appState.current,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  appState.toggleFavorite();
+                },
+                child: Text('❤️ Like'),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  appState.getNext();
+                },
+                child: Text('Next'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FavoritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    if (appState.favorites.isEmpty) {
+      return Center(child: Text('No favorites yet.'));
+    }
+
+    return ListView(
+      padding: EdgeInsets.all(16),
+      children: [
+        for (var pair in appState.favorites)
+          ListTile(
+            leading: Icon(Icons.favorite),
+            title:
+                Text('${_capitalize(pair.first)} ${_capitalize(pair.second)}'),
+          ),
+      ],
+    );
+  }
+
+  String _capitalize(String word) {
+    if (word.isEmpty) return word;
+    return word[0].toUpperCase() + word.substring(1);
   }
 }
