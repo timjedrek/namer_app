@@ -26,10 +26,21 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random().join(' ');
+  String current = _generateWordPairWithSpace();
+
   void getNext() {
-    current = WordPair.random().join(' ');
+    current = _generateWordPairWithSpace();
     notifyListeners();
+  }
+
+  static String _generateWordPairWithSpace() {
+    var pair = WordPair.random();
+    return '${_capitalize(pair.first)} ${_capitalize(pair.second)}';
+  }
+
+  static String _capitalize(String word) {
+    if (word.isEmpty) return word;
+    return word[0].toUpperCase() + word.substring(1);
   }
 }
 
@@ -40,12 +51,20 @@ class MyHomePage extends StatelessWidget {
 
     return Scaffold(
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('A random idea:'),
-          Text(appState.current),
+          Text(
+            'A random idea:',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          Text(
+            appState.current,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              appState.getNext(); // ← This instead of print().
+              appState.getNext();
             },
             child: Text('Next'),
           ),
