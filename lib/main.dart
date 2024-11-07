@@ -50,25 +50,36 @@ class MyHomePage extends StatelessWidget {
     var appState = context.watch<MyAppState>();
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'A random idea:',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          Text(
-            appState.current,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              appState.getNext();
-            },
-            child: Text('Next'),
-          ),
-        ],
+      body: Center(
+        // Center the column within the screen
+        child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center items vertically
+          children: [
+            Text('Hello World'),
+            Text(
+              'Here\'s a random idea:',
+              style: Theme.of(context).textTheme.headlineSmall,
+              textAlign: TextAlign.center, // Center-align text horizontally
+            ),
+            SizedBox(height: 10), // Space between text widgets
+            Text(
+              appState.current,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+              textAlign: TextAlign.center, // Center-align text horizontally
+            ),
+            SizedBox(height: 20), // Space between text and button
+            ElevatedButton(
+              onPressed: () {
+                appState.getNext();
+              },
+              child: Text('Next'),
+            ),
+          ],
+        ),
       ),
     );
   }
