@@ -27,9 +27,21 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   String current = _generateWordPairWithSpace();
+  var favorites = <WordPair>[];
 
   void getNext() {
     current = _generateWordPairWithSpace();
+    notifyListeners();
+  }
+
+  void toggleFavorite() {
+    var pair = WordPair(current.split(' ')[0].toLowerCase(),
+        current.split(' ')[1].toLowerCase());
+    if (favorites.contains(pair)) {
+      favorites.remove(pair);
+    } else {
+      favorites.add(pair);
+    }
     notifyListeners();
   }
 
@@ -72,11 +84,24 @@ class MyHomePage extends StatelessWidget {
               textAlign: TextAlign.center, // Center-align text horizontally
             ),
             SizedBox(height: 20), // Space between text and button
-            ElevatedButton(
-              onPressed: () {
-                appState.getNext();
-              },
-              child: Text('Next'),
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center buttons horizontally
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  child: Text('❤️ Like'),
+                ),
+                SizedBox(width: 10), // Space between the buttons
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text('Next'),
+                ),
+              ],
             ),
           ],
         ),
