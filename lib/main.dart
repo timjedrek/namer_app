@@ -34,9 +34,7 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleFavorite() {
-    var pair = WordPair(current.split(' ')[0].toLowerCase(),
-        current.split(' ')[1].toLowerCase());
+  void toggleFavorite(WordPair pair) {
     if (favorites.contains(pair)) {
       favorites.remove(pair);
     } else {
@@ -66,8 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
     return Scaffold(
       body: Row(
         children: [
@@ -134,7 +130,11 @@ class GeneratorPage extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  appState.toggleFavorite();
+                  var pair = WordPair(
+                    appState.current.split(' ')[0].toLowerCase(),
+                    appState.current.split(' ')[1].toLowerCase(),
+                  );
+                  appState.toggleFavorite(pair);
                 },
                 child: Text('❤️ Like'),
               ),
@@ -167,7 +167,13 @@ class FavoritesPage extends StatelessWidget {
       children: [
         for (var pair in appState.favorites)
           ListTile(
-            leading: Icon(Icons.favorite),
+            leading: GestureDetector(
+              onTap: () {
+                appState.toggleFavorite(
+                    pair); // Remove this specific favorite when icon is tapped
+              },
+              child: Icon(Icons.favorite, color: Colors.red),
+            ),
             title:
                 Text('${_capitalize(pair.first)} ${_capitalize(pair.second)}'),
           ),
